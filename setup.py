@@ -15,7 +15,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_namespace_packages(where='src'),
     install_requires=['requests'],
-    download_url = 'https://github.com/revops-io/revops-python/archive/v_0.0.1.tar.gz',
+    download_url = 'https://github.com/revops-io/revops-python/archive/v0.0.1.tar.gz',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
