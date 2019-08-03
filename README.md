@@ -39,3 +39,31 @@ Get your API token from your RevOps instance. Set the token to REVOPS_API_KEY in
 ```python
   from revops.api import RevOpsAPI
   api = RevOpsAPI()
+```
+
+### Send your first UsageEvent
+```python
+from revops.api import RevOpsAPI
+
+# Make sure you've set your REVOPS_API_KEY env var.
+# $> export REVOPS_API_KEY="xxxx"
+api = RevOpsAPI()
+
+# Create a UsageEvent Request
+product_usage = api.usage.events.create(
+    transaction_id = "my-first-usage-event-1",
+    mode = "insert",
+)
+
+# Add an hourly outbound-voice-minutes with the value 100
+# To the UsageEvent request
+product_usage.add_metric(
+    account_id = "my-first-account-id-1",
+    product = "voice-minutes",
+    metric_name = "outbound-voice-minutes",
+    metric_value = 100,
+    metric_resolution = "hour",
+)
+
+product_usage.commit()
+```
