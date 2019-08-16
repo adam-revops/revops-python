@@ -4,6 +4,8 @@ import sys
 import requests
 import logging
 
+import revops.exceptions
+
 __LOGGING_DEFAULTS__ = {'level': logging.DEBUG}
 __DEFAULT_ENDPOINT__ = 'https://api.revops.io'
 
@@ -46,4 +48,10 @@ class RevOpsAPI(object):
             data=data,
             headers=self.headers,
         )
+        if response.status_code == 401:
+            raise revops.exceptions.AuthenticationException(
+                "Unauthorized key, please check credentials provided.",
+                api_resource,
+                response,
+            )
         return response
