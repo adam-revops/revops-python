@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="revops",
-    version="0.0.3",
+    version="0.0.4",
     author="Adam Ballai",
     author_email="adam@revops.io",
     description="RevOps Python Client",
@@ -15,7 +15,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_namespace_packages(where='src'),
     install_requires=['requests', 'marshmallow'],
-    download_url = 'https://github.com/revops-io/revops-python/archive/v0.0.3.tar.gz',
+    download_url = 'https://github.com/revops-io/revops-python/archive/v0.0.4.tar.gz',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
