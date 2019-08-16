@@ -6,7 +6,6 @@ api = RevOpsAPI()
 record_request = api.usage.events.create(
     transaction_id = "batch-1",
     mode = "insert",
-    account_id = "ROOT",
 )
 
 record_request.add_metric(
