@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="revops",
-    version="0.0.2",
+    version="0.0.3",
     author="Adam Ballai",
     author_email="adam@revops.io",
     description="RevOps Python Client",

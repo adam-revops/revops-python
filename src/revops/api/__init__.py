@@ -1,3 +1,5 @@
+name = "api"
+
 import os
 import sys
 
