@@ -38,8 +38,7 @@ class RevOpsAPI(object):
             "revops.resources.{}".format(name),
             fromlist=["revops.resources"]
         )
-        resource.init(self)
-        return resource
+        return resource.__api_module__(self)
 
     def request(self, data, api_resource = None, http_method = "GET"):
         url = "{}/{}".format(self.api_endpoint, api_resource)

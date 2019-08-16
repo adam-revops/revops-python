@@ -70,7 +70,11 @@ class UsageEvent(APIResource):
 Defines the records module
 revops.usage.records.<action>
 """
-events = None
-def init(api):
-    global events
-    events = UsageEvent(api)
+class __api_module__(object):
+
+    def __init__(self, api):
+        self._api = api
+
+    @property
+    def events(self):
+        return UsageEvent(self._api)
