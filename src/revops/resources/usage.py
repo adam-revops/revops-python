@@ -38,9 +38,11 @@ class UsageEvent(APIResource):
         self.event_metrics.append(metric)
 
     def create(self, **kwargs):
+        self.event_metrics = []
         self.date_submitted = kwargs.get(
             'date_submitted', self.get_current_time()
         )
+        
         response, errors = self._marshaler().load(data=kwargs)
         if len(errors) > 0:
             raise RequestSchemaException(
