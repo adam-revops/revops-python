@@ -15,7 +15,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_namespace_packages(where='src'),
     install_requires=['requests', 'marshmallow'],
-    download_url = 'https://github.com/revops-io/revops-python/archive/v0.0.2.tar.gz',
+    download_url = 'https://github.com/revops-io/revops-python/archive/v0.0.3.tar.gz',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
