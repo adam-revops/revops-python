@@ -1,4 +1,4 @@
 all:
 
 twine: 
-	. .venv/bin/activate;  twine upload dist/*
+	. .venv/bin/activate; python setup.py sdist;  twine upload dist/*
