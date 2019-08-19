@@ -42,7 +42,7 @@ class UsageEvent(APIResource):
         self.date_submitted = kwargs.get(
             'date_submitted', self.get_current_time()
         )
-        
+
         response, errors = self._marshaler().load(data=kwargs)
         if len(errors) > 0:
             raise RequestSchemaException(

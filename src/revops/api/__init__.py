@@ -8,7 +8,7 @@ import logging
 
 import revops.exceptions
 
-__LOGGING_DEFAULTS__ = {'level': logging.DEBUG}
+__LOGGING_DEFAULTS__ = {'level': logging.INFO}
 __DEFAULT_ENDPOINT__ = 'https://api.revops.io'
 
 logging.basicConfig(**__LOGGING_DEFAULTS__)

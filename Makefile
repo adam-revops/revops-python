@@ -1,4 +1,4 @@
 all:
 
 twine: 
-	twine upload dist/*
+	. .venv/bin/activate;  twine upload dist/*
