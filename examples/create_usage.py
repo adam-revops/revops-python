@@ -3,29 +3,21 @@ from revops.api import RevOpsAPI
 
 api = RevOpsAPI()
 
-record_request = api.usage.events.create(
-    transaction_id = "batch-1",
-    mode = "insert",
+# Add metrics you want to track for billing purposes
+api.usage.events.add_metric(
+    account_id='revops-io', 
+    metric_name='active-dolls', # The second part to a product metric "dolly-platform.active-dolls"
+    metric_value=100, 
+    metric_resolution = "hour", # Track and aggregate the usage every hour, month, day, year.
+    product='dolly-platform', # The product name from "dolly-platform.active-dolls"
+)
+response = api.usage.events.create(
+    transaction_id='1234', # idempotency key
+    mode="insert" # insert or upsert the data in the usage database
 )
 
-record_request.add_metric(
-    account_id = "test123",
-    product = "my-product",
-    metric_name = "nam",
-    metric_value = 102,
-    metric_resolution = "hour",
-)
-
-record_request.add_metric(
-    account_id = "test456",
-    product = "my-product",
-    metric_name = "nam1",
-    metric_value = 100,
-    metric_resolution = "hour",
-)
-
-usage_record = record_request.commit()
-print(usage_record.transaction_id)
-print("Created {}: {}".format(usage_record.id, usage_record.date_submitted))
-print("\tMode: {}".format(usage_record.mode))
-response = usage_record.delete()
+try:
+    print(response)
+except Exception as e:
+    print("Unable to persist usage event.")
+    print(e)

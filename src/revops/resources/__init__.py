@@ -8,20 +8,9 @@ class APIResource(object):
     _api = None
     _data = ''
     _resource = None
-    _marshaler = None
-    _errors = None
 
     def __init__(self, api, **kwargs):
         self._api = api
-
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def _update_request(self):
-        marshal = self._marshaler()
-        self._data, self._errors = marshal.dumps(self)
-
-    def _copy_properties(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -30,7 +19,6 @@ class APIResource(object):
         api = None,
         sub_resource = "",
         http_method = "GET",
-        debug = False,
         ):
         if api != None:
             self._api = api
@@ -40,7 +28,6 @@ class APIResource(object):
         if self._resource == None:
             raise Exception("Unable to send request, no _resource defined for {}".format(self))
 
-        self._update_request()
         response = self._api.request(
             http_method = http_method,
             data = self._data,
@@ -61,11 +48,7 @@ class APIResource(object):
 
         parsed = json.loads(response.content)
 
-        if debug == True:
-            print(json.dumps(parsed, indent=4, sort_keys=True))
-            
-        klass = type(self)
-        return klass(api=self._api, **parsed)
+        return parsed
 
     def get_current_time(self):
         return datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()

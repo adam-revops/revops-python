@@ -1,30 +1,15 @@
+from typing import List, Optional
 from revops.resources import APIResource
-from revops.schema import EventMetricSchema, UsageEventSchema
+from revops.schema import EventMetricSchema, MetricResolution, UsageEventMode, UsageEventSchema
 from revops.exceptions import RequestSchemaException
 
 from marshmallow import Schema, fields
 from datetime import datetime, timezone
 
-
-class EventMetric(APIResource):
-    account_id = None
-    metadata = {}
-    metric_name = None
-    metric_value = 0
-    product = None
-    time_period = None
-
-    def create(self, **kwargs):
-        self._copy_properties(**kwargs)
-        event_metric_schema = EventMetricSchema()
-        event_metric_schema.load(kwargs)
-        return self
-
 class UsageEvent(APIResource):
     _resource = "v1/usage/events"
     _metrics = []
-    _marshaler = UsageEventSchema
-
+       
     id = None
     date_submitted = None
     event_metrics = []
@@ -32,41 +17,60 @@ class UsageEvent(APIResource):
     usage_event_id = None
     transaction_id = None
 
-    def add_metric(self, **kwargs):
-        metric = EventMetric(self._api)
-        metric.create(**kwargs)
-        self.event_metrics.append(metric)
+    def add_metric(self, 
+        account_id: str, 
+        metric_name: str, 
+        metric_value: int, 
+        product: str, 
+        metric_resolution: Optional[MetricResolution] = MetricResolution.MONTH, 
+        date_submitted: Optional[datetime] = None,
+        sub_account_id: Optional[str] = "",
+        metadata: Optional[dict] = {}
+        ):
 
-    def create(self, **kwargs):
-        self.event_metrics = []
-        self.date_submitted = kwargs.get(
-            'date_submitted', self.get_current_time()
+        if date_submitted is None:
+            date_submitted = datetime.now()
+
+        self.event_metrics.append(
+            EventMetricSchema(
+                account_id=account_id, 
+                sub_account_id=sub_account_id,
+                metric_name=metric_name, 
+                metric_value=metric_value, 
+                metric_resolution=metric_resolution,
+                product=product, 
+                date_submitted=date_submitted,
+                metadata=metadata
+            )
         )
 
-        response, errors = self._marshaler().load(data=kwargs)
-        if len(errors) > 0:
-            raise RequestSchemaException(
-                message="Unable to create UsageEvent",
-                errors=errors,
-                resource=self._resource,
+    def create(self, 
+            transaction_id: str,
+            event_metrics: Optional[List[EventMetricSchema]] = None,
+            date_submitted: Optional[datetime] = None,
+            mode: Optional[UsageEventMode]= UsageEventMode.UPSERT
+        ):
+
+        if date_submitted is None:
+            date_submitted = datetime.now()
+
+        if event_metrics is not None:
+            self.event_metrics.extend(
+                event_metrics
             )
-        self._copy_properties(**kwargs)
-        return self
+ 
 
-    def commit(self):
-        return self.request(http_method = "POST")
+        event = UsageEventSchema(
+            date_submitted=datetime.now(), 
+            event_metrics=self.event_metrics, 
+            transaction_id=transaction_id,
+            mode=mode,
+        )
 
-    def delete(self, id = None):
-        if id is not None:
-            self.id = id
-
-        if self.id == None and id == None:
-            raise RequestSchemaException(
-                message="Unable to delete UsageEvent, id is not set.",
-                errors=[],
-                resource=self._resource,
-            )
-        return self.request(http_method = "DELETE", sub_resource="/{}".format(self.id))
+        return self.request(
+            data=event.json(),
+            http_method = "POST"
+        )
 
 """
 Defines the records module
