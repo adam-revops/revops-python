@@ -1,36 +1,32 @@
-from marshmallow import Schema, fields, validates_schema, ValidationError
+from datetime import datetime
+from typing import List, Optional
+from pydantic import BaseModel
+from enum import Enum
 
-class UsageEventMode(fields.Field):
-    def _serialize(self, value, attr, obj, **kwargs):
-        if not value:
-            return ''
-        return str(value).lower()
+class MetricResolution(str, Enum):
+    MINUTE = "minute"
+    HOUR = "hour"
+    DAY = "day"
+    MONTH = "month"
+    YEAR = "year"
 
-class EventMetricSchema(Schema):
-    account_id = fields.Str(empty=False, required=True)
-    sub_account_id = fields.Str(empty=False, required=False)
-    metadata = fields.Dict()
-    metric_name = fields.Str(empty=False, required=True)
-    metric_value = fields.Int(empty=False, required=True)
-    metric_resolution = fields.Str(empty=False, required=True)
-    product = fields.Str(empty=False, required=True)
+class UsageEventMode(str, Enum):
+    INSERT = "insert"
+    UPSERT = "upsert"
+
+class EventMetricSchema(BaseModel):
+    account_id: str
+    sub_account_id: Optional[str]
+    metadata: Optional[dict]
+    metric_name: str
+    metric_value: int
+    metric_resolution: MetricResolution = MetricResolution.MONTH
+    product:str
+    date_submitted: datetime
 
 
-class UsageEventSchema(Schema):
-    date_submitted = fields.DateTime(required=False)
-    event_metrics = fields.Nested(EventMetricSchema, many=True, required=False)
-    mode = UsageEventMode(empty=False, required=True)
-    transaction_id = fields.Str(empty=False, required=False)
-
-    @validates_schema
-    def validate_mode(self, data, **kwargs):
-        valid_modes = [
-            'insert',
-            'upsert',
-        ]
-        if 'mode' in data and data['mode'] in valid_modes:
-            return
-
-        error_msg = "UsageEvent.mode value `{}` not valid, must be one of {}" \
-            .format(data['mode'], ', '.join(valid_modes))
-        raise ValidationError(error_msg, 'mode')
+class UsageEventSchema(BaseModel):
+    date_submitted: datetime
+    event_metrics: List[EventMetricSchema]
+    mode: UsageEventMode = UsageEventMode.UPSERT
+    transaction_id: str

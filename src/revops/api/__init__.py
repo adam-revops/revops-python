@@ -29,7 +29,7 @@ class RevOpsAPI(object):
             raise Exception("REVOPS_API_KEY environment variable is not set.")
         self.api_endpoint = os.environ.get('REVOPS_API_ENDPOINT', endpoint)
         self.headers = {
-            'X-RevOps-API-Key': self.api_key,
+            'Authorization': f"Bearer {self.api_key}",
             'Content-Type': 'application/json',
         }
 
